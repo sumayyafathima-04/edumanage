@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// API Base URL: Uses VITE_API_URL environment variable in production, falls back to localhost in dev
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = rawApiUrl.replace(/\/+$/, '');
 
 /**
  * Universal request wrapper that automatically injects JWT token
@@ -16,7 +18,8 @@ async function request(endpoint, options = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const url = `${API_BASE_URL}${endpoint}`;
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE_URL}${cleanEndpoint}`;
 
   try {
     const response = await fetch(url, {
@@ -36,6 +39,19 @@ async function request(endpoint, options = {}) {
 
     return data;
   } catch (error) {
+    // Check if error is due to calling localhost from deployed GitHub Pages
+    if (
+      typeof window !== 'undefined' &&
+      window.location.hostname !== 'localhost' &&
+      window.location.hostname !== '127.0.0.1' &&
+      API_BASE_URL.includes('localhost')
+    ) {
+      const friendlyMsg =
+        'Backend server not connected: API is currently pointing to localhost. When deployed to GitHub Pages, set VITE_API_URL to your live deployed backend URL (e.g. on Render or Railway).';
+      console.error(friendlyMsg);
+      throw new Error(friendlyMsg);
+    }
+
     console.error(`API Error on [${options.method || 'GET'} ${endpoint}]:`, error.message);
     throw error;
   }

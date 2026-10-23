@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Student Management System</title>
+    <script>
+      // Single Page Apps redirect for GitHub Pages
+      // When a user directly visits /edumanage/dashboard, GitHub Pages serves 404.html.
+      // This script redirects them to /edumanage/#/dashboard so HashRouter handles it seamlessly.
+      (function () {
+        var l = window.location;
+        var pathname = l.pathname; // e.g. /edumanage/dashboard
+        var pathSegments = pathname.split('/').filter(Boolean); // ['edumanage', 'dashboard']
+
+        // If deployed to a project page e.g. /<repo>/...
+        var repoName = pathSegments.length > 0 ? pathSegments[0] : '';
+        var remainingPath = '/' + pathSegments.slice(1).join('/');
+
+        if (repoName) {
+          var target = l.protocol + '//' + l.host + '/' + repoName + '/#' + remainingPath + l.search + l.hash;
+          l.replace(target);
+        } else {
+          var target = l.protocol + '//' + l.host + '/#' + pathname + l.search + l.hash;
+          l.replace(target);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <p style="font-family: sans-serif; text-align: center; margin-top: 3rem; color: #493B32;">
+      Loading Student Management System...
+    </p>
+  </body>
+</html>
